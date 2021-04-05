@@ -117,6 +117,15 @@ describe('DELETE /admin/user/{username} - Admin Feature: DELETE User', () => {
     done();
   });
 
+  test('Fail - Try to Delete User with invalid username', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .delete('/admin/user/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`]);
+    expect(response.status).toBe(404);
+    done();
+  });
+
   test('Fail - Wrong Method', async done => {
     // Request
     const response = await request(testEnv.expressServer.app)

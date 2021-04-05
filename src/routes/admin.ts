@@ -9,6 +9,7 @@ import AuthToken from '../datatypes/AuthToken';
 import {NewPassword, validateNewPassword} from '../datatypes/NewPassword';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
+import NotFoundError from '../exceptions/NotFoundError';
 import User from '../datatypes/User';
 import Session from '../datatypes/Session';
 import passwordRule from '../utils/passwordRule';
@@ -88,7 +89,7 @@ adminRouter.delete(
       // Verify username
       const delTarget = req.params.username; // username that will be deleted
       if (!usernameRule(delTarget)) {
-        throw new BadRequestError();
+        throw new NotFoundError();
       }
 
       await Promise.all([
@@ -123,8 +124,11 @@ adminRouter.put(
 
       // Verify User's Input
       const editTarget = req.params.username;
+      if (!usernameRule(editTarget)) {
+        throw new NotFoundError();
+      }
       const input: NewPassword = req.body;
-      if (!validateNewPassword(input) || !usernameRule(editTarget)) {
+      if (!validateNewPassword(input)) {
         throw new BadRequestError();
       }
       const newPassword: string = input.newPassword;

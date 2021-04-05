@@ -138,6 +138,46 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     done();
   });
 
+  test('Fail - Invalid password', async done => {
+    // Login with the target user
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'admin', password: 'Rootpw12!!'});
+    expect(response.status).toBe(200);
+    currentDate.setSeconds(currentDate.getSeconds() + 1);
+    MockDate.set(currentDate.getTime());
+    response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'admin', password: 'Rootpw12!!'});
+    expect(response.status).toBe(200);
+
+    // Password Change Request
+    response = await request(testEnv.expressServer.app)
+      .put('/admin/user/admin/password')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send({newPassword: 'newPW123!!'});
+    expect(response.status).toBe(400);
+
+    // DB Check - User: Password Not Changed
+    let queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'admin'"
+    );
+    expect(queryResult.length).toBe(1);
+    const hashedPassword = testEnv.testConfig.hash(
+      'admin',
+      new Date(queryResult[0].membersince).toISOString(),
+      'Rootpw12!!'
+    );
+    expect(queryResult[0].password).toBe(hashedPassword);
+
+    // DB Check - Session (Not Logged Out)
+    queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM session WHERE username = 'admin'"
+    );
+    expect(queryResult.length).toBe(3);
+    done();
+  });
+
   test('Fail - Use Non-Admin Access Token', async done => {
     // Login with the target user
     let response = await request(testEnv.expressServer.app)
@@ -230,6 +270,16 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Password Change Request
     const response = await request(testEnv.expressServer.app)
       .put('/admin/user/user3/password')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send({newPassword: 'newPW129!!'});
+    expect(response.status).toBe(404);
+    done();
+  });
+
+  test('Fail - Invalid username', async done => {
+    // Password Change Request
+    const response = await request(testEnv.expressServer.app)
+      .put('/admin/user/user/password')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({newPassword: 'newPW129!!'});
     expect(response.status).toBe(404);

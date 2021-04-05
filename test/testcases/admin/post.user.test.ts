@@ -126,6 +126,81 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     done();
   });
 
+  test('Fail - Invalid Username', async done => {
+    // Request
+    newUser = {
+      username: 'user',
+      password: 'newPW129!!',
+      membersince: memberSince.toISOString(),
+    };
+    // Short
+    let response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Invalid Character
+    newUser.username = 'User12';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Invalid Character
+    newUser.username = 'user123!!';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Not start with alphabet
+    newUser.username = '1user123';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Too Long
+    newUser.username = 'useruseruseruser';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // DB Check
+    const queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user'"
+    );
+    expect(queryResult.length).toBe(0);
+    done();
+  });
+
+  test('Fail - Invalid Password', async done => {
+    // Request
+    newUser = {
+      username: 'user3',
+      password: 'newpw129!!',
+      membersince: memberSince.toISOString(),
+    };
+    const response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // DB Check
+    const queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user'"
+    );
+    expect(queryResult.length).toBe(0);
+    done();
+  });
+
   test('Fail - Use Refresh Token as Access Token', async done => {
     // Request
     const response = await request(testEnv.expressServer.app)

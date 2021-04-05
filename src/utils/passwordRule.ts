@@ -15,7 +15,7 @@ export default function passwordRule(
   username: string,
   password: string
 ): boolean {
-  const passwordRegExp = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*\-+=])[a-zA-Z0-9!@#$%^&*\-+=]{10,50}/;
+  const passwordRegExp = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*\-+=])[a-zA-Z0-9!@#$%^&*\-+=]{10,50}$/;
   const notAllowedRegExp = /[^0-9a-zA-Z!@#$%^&*\-+=]/;
 
   // Check whether the password contains not allowed characters
