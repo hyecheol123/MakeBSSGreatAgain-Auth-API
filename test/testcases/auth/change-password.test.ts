@@ -159,6 +159,125 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     done();
   });
 
+  test('Fail - Invalid Password', async done => {
+    // Password change request
+    const response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPW123!!'});
+    expect(response.status).toBe(400);
+
+    // DB Check - User: Password Not Changed
+    let queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user2'"
+    );
+    expect(queryResult.length).toBe(1);
+    const hashedPassword = testEnv.testConfig.hash(
+      'user2',
+      new Date(queryResult[0].membersince).toISOString(),
+      'Password12!'
+    );
+    expect(queryResult[0].password).toBe(hashedPassword);
+
+    // DB Check - Session: Other Session Not Cleared
+    queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM session WHERE username = 'user2'"
+    );
+    expect(queryResult.length).toBe(3);
+    done();
+  });
+
+  test('Fail - Invalid Password (Additional)', async done => {
+    // No Number
+    let response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPWacf!!'});
+    expect(response.status).toBe(400);
+
+    // No Capitals
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'new79129!!'});
+    expect(response.status).toBe(400);
+
+    // No small cases
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'NEWPW129!!'});
+    expect(response.status).toBe(400);
+
+    // No symbols
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'NEWpw129NW'});
+    expect(response.status).toBe(400);
+
+    // Invalid symbols
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPW129??'});
+    expect(response.status).toBe(400);
+
+    // Consecutive Letters
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPW123!!'});
+    expect(response.status).toBe(400);
+
+    // Consecutive Letters
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPW321!!'});
+    expect(response.status).toBe(400);
+
+    // Same Letters
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'newPW111!!'});
+    expect(response.status).toBe(400);
+
+    // Same Letters in username
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'serPW111!!'});
+    expect(response.status).toBe(400);
+
+    // Same Letters in username - Reverse
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: 'resPW111!!'});
+    expect(response.status).toBe(400);
+
+    // Short
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'Password12!', newPassword: '!pW1'});
+    expect(response.status).toBe(400);
+
+    // Long
+    response = await request(testEnv.expressServer.app)
+      .put('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({
+        currentPassword: 'Password12!',
+        newPassword:
+          'PasswordUser129!!PasswordUser129!!PasswordUser129!!PasswordUser129!!PasswordUser129!!',
+      });
+    expect(response.status).toBe(400);
+    done();
+  });
+
   test('Fail - Invalid Token', async done => {
     // Password change request
     const response = await request(testEnv.expressServer.app)

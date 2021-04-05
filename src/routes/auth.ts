@@ -20,6 +20,7 @@ import User from '../datatypes/User';
 import Session from '../datatypes/Session';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
+import NotFoundError from '../exceptions/NotFoundError';
 import passwordRule from '../utils/passwordRule';
 import usernameRule from '../utils/usernameRule';
 
@@ -36,11 +37,11 @@ authRouter.post(
     try {
       // Verify User's Input
       const loginCredential: LoginCredentials = req.body;
-      if (
-        !validateLoginCredentials(loginCredential) ||
-        !usernameRule(loginCredential.username)
-      ) {
+      if (!validateLoginCredentials(loginCredential)) {
         throw new BadRequestError();
+      }
+      if (!usernameRule(loginCredential.username)) {
+        throw new NotFoundError();
       }
 
       // Retrieve user information from database

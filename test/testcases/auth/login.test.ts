@@ -126,6 +126,15 @@ describe('POST /login - Login with username and password', () => {
     done();
   });
 
+  test('Fail - Invalid Username', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user', password: 'Password12!'});
+    expect(response.status).toBe(404);
+    done();
+  });
+
   test('Bad Request', async done => {
     // Request without body
     let response = await request(testEnv.expressServer.app)
