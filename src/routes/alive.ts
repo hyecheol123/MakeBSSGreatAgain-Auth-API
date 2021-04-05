@@ -6,7 +6,7 @@
  */
 
 import * as express from 'express';
-import dbCheck from '../datatypes/dbCheck';
+import dbCheck from '../utils/dbCheck';
 import HTTPError from '../exceptions/HTTPError';
 
 const aliveRouter = express.Router();

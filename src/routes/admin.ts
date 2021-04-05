@@ -11,6 +11,8 @@ import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
 import User from '../datatypes/User';
 import Session from '../datatypes/Session';
+import passwordRule from '../utils/passwordRule';
+import usernameRule from '../utils/usernameRule';
 
 const adminRouter = express.Router();
 
@@ -29,9 +31,12 @@ adminRouter.post(
         throw new AuthenticationError();
       }
 
-      // Verify admin's input
       const input: User = req.body;
-      if (!User.validateNewUserForm(input)) {
+      if (
+        !User.validateNewUserForm(input) || // Verify admin's input
+        !usernameRule(input.username) || // Check Username and Password Rule
+        !passwordRule(input.username, input.password)
+      ) {
         throw new BadRequestError();
       }
 
@@ -79,7 +84,12 @@ adminRouter.delete(
       if (content.admin !== true) {
         throw new AuthenticationError();
       }
+
+      // Verify username
       const delTarget = req.params.username; // username that will be deleted
+      if (!usernameRule(delTarget)) {
+        throw new BadRequestError();
+      }
 
       await Promise.all([
         // Delete User
@@ -114,13 +124,18 @@ adminRouter.put(
       // Verify User's Input
       const editTarget = req.params.username;
       const input: NewPassword = req.body;
-      if (!validateNewPassword(input)) {
+      if (!validateNewPassword(input) || !usernameRule(editTarget)) {
         throw new BadRequestError();
       }
       const newPassword: string = input.newPassword;
 
       // Retrieve User Information from DB
       const user = await User.read(req.app.locals.dbClient, editTarget);
+
+      // Check password Rule
+      if (!passwordRule(user.username, newPassword)) {
+        throw new BadRequestError();
+      }
 
       // Hash Password
       const hashedPassword = req.app.locals.hash(

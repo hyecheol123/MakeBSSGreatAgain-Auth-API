@@ -20,6 +20,8 @@ import User from '../datatypes/User';
 import Session from '../datatypes/Session';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
+import passwordRule from '../utils/passwordRule';
+import usernameRule from '../utils/usernameRule';
 
 const authRouter = express.Router();
 
@@ -34,7 +36,10 @@ authRouter.post(
     try {
       // Verify User's Input
       const loginCredential: LoginCredentials = req.body;
-      if (!validateLoginCredentials(loginCredential)) {
+      if (
+        !validateLoginCredentials(loginCredential) ||
+        !usernameRule(loginCredential.username)
+      ) {
         throw new BadRequestError();
       }
 
@@ -181,8 +186,9 @@ authRouter.get(
     try {
       // Verify the refresh Token
       // eslint-disable-next-line prettier/prettier
-      const verifyResult: RefreshTokenVerifyResult = await req.app.locals
-        .refreshTokenVerify(req);
+      const verifyResult: RefreshTokenVerifyResult = await req.app.locals.refreshTokenVerify(
+        req
+      );
 
       // Check User Existence
       try {
@@ -276,6 +282,11 @@ authRouter.put(
 
       // Retrieve User information from DB
       const user = await User.read(req.app.locals.dbClient, username);
+
+      // Check password Rule
+      if (!passwordRule(user.username, changePassword.newPassword)) {
+        throw new BadRequestError();
+      }
 
       // Check current password
       let hashedPassword = req.app.locals.hash(
