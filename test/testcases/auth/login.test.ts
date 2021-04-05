@@ -131,7 +131,7 @@ describe('POST /login - Login with username and password', () => {
     const response = await request(testEnv.expressServer.app)
       .post('/login')
       .send({username: 'user', password: 'Password12!'});
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(401);
     done();
   });
 

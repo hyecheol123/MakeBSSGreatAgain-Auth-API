@@ -20,7 +20,6 @@ import User from '../datatypes/User';
 import Session from '../datatypes/Session';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
-import NotFoundError from '../exceptions/NotFoundError';
 import passwordRule from '../utils/passwordRule';
 import usernameRule from '../utils/usernameRule';
 
@@ -41,7 +40,7 @@ authRouter.post(
         throw new BadRequestError();
       }
       if (!usernameRule(loginCredential.username)) {
-        throw new NotFoundError();
+        throw new AuthenticationError();
       }
 
       // Retrieve user information from database
