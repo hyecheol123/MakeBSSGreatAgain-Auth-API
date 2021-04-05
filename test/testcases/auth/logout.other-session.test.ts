@@ -32,12 +32,12 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     MockDate.set(currentDate.getDate());
     await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
     await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
   });
@@ -51,7 +51,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     // User Login (Retrieve Refresh Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     const refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -77,7 +77,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     // User Login (Retrieve Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     const accessToken = response.header['set-cookie'][0]
       .split('; ')[0]
@@ -103,7 +103,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     // User Login (Retrieve Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     const refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -127,6 +127,24 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
       ['user2']
     );
     expect(queryResult.length).toBe(2);
+    done();
+  });
+
+  test('Fail - Wrong Method', async done => {
+    // User Login (Retrieve Refresh Token)
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user2', password: 'Password12!'});
+    expect(response.status).toBe(200);
+    const refreshToken = response.header['set-cookie'][1]
+      .split('; ')[0]
+      .split('=')[1];
+
+    // Logout Request
+    response = await request(testEnv.expressServer.app)
+      .trace('/logout/other-sessions')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
+    expect(response.status).toBe(405);
     done();
   });
 });

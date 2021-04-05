@@ -37,7 +37,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     memberSince.setMilliseconds(0);
     newUser = {
       username: 'admin2',
-      password: 'newpw',
+      password: 'newPW129!!',
       membersince: memberSince.toISOString(),
       admin: true,
     };
@@ -45,7 +45,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Login with admin user
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
     refreshToken = response.header['set-cookie'][1]
@@ -84,7 +84,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Able to login with new Account
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin2', password: 'newpw'});
+      .send({username: 'admin2', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -93,7 +93,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Request
     newUser = {
       username: 'user3',
-      password: 'newpw',
+      password: 'newPW129!!',
       membersince: memberSince.toISOString(),
     };
     let response = await request(testEnv.expressServer.app)
@@ -121,8 +121,83 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Able to login with new Account
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user3', password: 'newpw'});
+      .send({username: 'user3', password: 'newPW129!!'});
     expect(response.status).toBe(200);
+    done();
+  });
+
+  test('Fail - Invalid Username', async done => {
+    // Request
+    newUser = {
+      username: 'user',
+      password: 'newPW129!!',
+      membersince: memberSince.toISOString(),
+    };
+    // Short
+    let response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Invalid Character
+    newUser.username = 'User12';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Invalid Character
+    newUser.username = 'user123!!';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Not start with alphabet
+    newUser.username = '1user123';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // Too Long
+    newUser.username = 'useruseruseruser';
+    response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // DB Check
+    const queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user'"
+    );
+    expect(queryResult.length).toBe(0);
+    done();
+  });
+
+  test('Fail - Invalid Password', async done => {
+    // Request
+    newUser = {
+      username: 'user3',
+      password: 'newpw129!!',
+      membersince: memberSince.toISOString(),
+    };
+    const response = await request(testEnv.expressServer.app)
+      .post('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(400);
+
+    // DB Check
+    const queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user'"
+    );
+    expect(queryResult.length).toBe(0);
     done();
   });
 
@@ -202,7 +277,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Login with non-admin user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
     refreshToken = response.header['set-cookie'][1]
@@ -230,7 +305,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
         username: 'admin2',
-        password: 'newpw',
+        password: 'newPW123!!',
         admin: true,
       });
     expect(response.status).toBe(400);
@@ -249,7 +324,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .post('/admin/user')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
-        password: 'newpw',
+        password: 'newPW123!!',
         membersince: memberSince.toISOString(),
         admin: true,
       });
@@ -284,7 +359,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
         username: 'admin2',
-        password: 'newpw',
+        password: 'newPW123!!',
         membersince: memberSince.toISOString(),
         admin: true,
         additional: 'dummy',
@@ -324,6 +399,17 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       newUser.password
     );
     expect(queryResult[0].password).not.toBe(hashedPassword);
+    done();
+  });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .notify('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(405);
     done();
   });
 });

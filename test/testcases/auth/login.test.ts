@@ -36,7 +36,7 @@ describe('POST /login - Login with username and password', () => {
     // Request
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
 
     // Check Cookie & token Information
@@ -83,7 +83,7 @@ describe('POST /login - Login with username and password', () => {
     // Request
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
 
     // Check Cookie & token Information
@@ -126,6 +126,15 @@ describe('POST /login - Login with username and password', () => {
     done();
   });
 
+  test('Fail - Invalid Username', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user', password: 'Password12!'});
+    expect(response.status).toBe(404);
+    done();
+  });
+
   test('Bad Request', async done => {
     // Request without body
     let response = await request(testEnv.expressServer.app)
@@ -161,7 +170,7 @@ describe('POST /login - Login with username and password', () => {
   test('Authentication Error - User Not Found', async done => {
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user', password: 'password12!'});
+      .send({username: 'notexistuser', password: 'password12!'});
     expect(response.status).toBe(401);
     const queryResult = await testEnv.dbClient.query('SELECT * FROM session');
     expect(queryResult.length).toBe(0);
@@ -175,6 +184,15 @@ describe('POST /login - Login with username and password', () => {
     expect(response.status).toBe(401);
     const queryResult = await testEnv.dbClient.query('SELECT * FROM session');
     expect(queryResult.length).toBe(0);
+    done();
+  });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .trace('/login')
+      .send({username: 'admin', password: 'rootpw!!'});
+    expect(response.status).toBe(405);
     done();
   });
 });

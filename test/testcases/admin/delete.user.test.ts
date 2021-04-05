@@ -29,14 +29,14 @@ describe('DELETE /admin/user/{username} - Admin Feature: DELETE User', () => {
     // Login with admin user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
 
     // Login with test target
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
   });
 
@@ -67,7 +67,7 @@ describe('DELETE /admin/user/{username} - Admin Feature: DELETE User', () => {
     // Login with Non-Admin Account
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
 
@@ -114,6 +114,24 @@ describe('DELETE /admin/user/{username} - Admin Feature: DELETE User', () => {
       .delete('/admin/user/user3')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`]);
     expect(response.status).toBe(404);
+    done();
+  });
+
+  test('Fail - Try to Delete User with invalid username', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .delete('/admin/user/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`]);
+    expect(response.status).toBe(404);
+    done();
+  });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .move('/admin/user/user1')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`]);
+    expect(response.status).toBe(405);
     done();
   });
 });

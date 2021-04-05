@@ -36,7 +36,7 @@ describe('DELETE /logout - Logout from current session', () => {
     // User Login (Retrieve Refresh Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     const refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -69,7 +69,7 @@ describe('DELETE /logout - Logout from current session', () => {
     // User Login (Retrieve Refresh Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
     const accessToken = response.header['set-cookie'][0]
       .split('; ')[0]
@@ -136,7 +136,7 @@ describe('DELETE /logout - Logout from current session', () => {
     // User Login (Retrieve Refresh Token)
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
     const refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -153,6 +153,24 @@ describe('DELETE /logout - Logout from current session', () => {
       [refreshToken]
     );
     expect(queryResult.length).toBe(1);
+    done();
+  });
+
+  test('Fail - Wrong Method', async done => {
+    // User Login (Retrieve Refresh Token)
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user2', password: 'Password12!'});
+    expect(response.status).toBe(200);
+    const refreshToken = response.header['set-cookie'][1]
+      .split('; ')[0]
+      .split('=')[1];
+
+    // Logout Request
+    response = await request(testEnv.expressServer.app)
+      .trace('/logout')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
+    expect(response.status).toBe(405);
     done();
   });
 });

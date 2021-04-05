@@ -20,6 +20,9 @@ import User from '../datatypes/User';
 import Session from '../datatypes/Session';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import BadRequestError from '../exceptions/BadRequestError';
+import NotFoundError from '../exceptions/NotFoundError';
+import passwordRule from '../utils/passwordRule';
+import usernameRule from '../utils/usernameRule';
 
 const authRouter = express.Router();
 
@@ -36,6 +39,9 @@ authRouter.post(
       const loginCredential: LoginCredentials = req.body;
       if (!validateLoginCredentials(loginCredential)) {
         throw new BadRequestError();
+      }
+      if (!usernameRule(loginCredential.username)) {
+        throw new NotFoundError();
       }
 
       // Retrieve user information from database
@@ -100,9 +106,14 @@ authRouter.post(
       const cookieOption: express.CookieOptions = {
         httpOnly: true,
         maxAge: 15 * 60,
+        secure: true,
+        domain: 'api.bshs.or.kr',
+        path: '/',
+        sameSite: 'strict',
       };
       res.cookie('X-ACCESS-TOKEN', accessToken, cookieOption);
       cookieOption.maxAge = 120 * 60;
+      cookieOption.path = '/auth';
       res.cookie('X-REFRESH-TOKEN', refreshToken, cookieOption);
       res.status(200).send();
     } catch (e) {
@@ -176,8 +187,9 @@ authRouter.get(
     try {
       // Verify the refresh Token
       // eslint-disable-next-line prettier/prettier
-      const verifyResult: RefreshTokenVerifyResult = await req.app.locals
-        .refreshTokenVerify(req);
+      const verifyResult: RefreshTokenVerifyResult = await req.app.locals.refreshTokenVerify(
+        req
+      );
 
       // Check User Existence
       try {
@@ -271,6 +283,11 @@ authRouter.put(
 
       // Retrieve User information from DB
       const user = await User.read(req.app.locals.dbClient, username);
+
+      // Check password Rule
+      if (!passwordRule(user.username, changePassword.newPassword)) {
+        throw new BadRequestError();
+      }
 
       // Check current password
       let hashedPassword = req.app.locals.hash(
