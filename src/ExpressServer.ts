@@ -13,11 +13,11 @@ import AuthenticationError from './exceptions/AuthenticationError';
 import HTTPError from './exceptions/HTTPError';
 import AuthToken from './datatypes/AuthToken';
 import adminRouter from './routes/admin';
+import aliveRouter from './routes/alive';
 import authRouter from './routes/auth';
 import Session from './datatypes/Session';
 import RefreshTokenVerifyResult from './datatypes/RefreshTokenVerifyResult';
 import JWTObject from './datatypes/JWTObject';
-import aliveRouter from './routes/alive';
 
 /**
  * Class contains Express Application and other relevant instances/functions
@@ -123,6 +123,23 @@ export default class ExpressServer {
     // Setup Parsers
     this.app.use(express.json());
     this.app.use(cookieParser());
+
+    // Only Allow GET, POST, DELETE, PUT method
+    this.app.use(
+      (
+        req: express.Request,
+        _res: express.Response,
+        next: express.NextFunction
+      ): void => {
+        // Test for HTTP methods
+        if (!['GET', 'POST', 'DELETE', 'PUT', 'HEAD'].includes(req.method)) {
+          next(new HTTPError(405, 'Method Not Allowed'));
+        } else {
+          // When the request is valid, handle the request properly
+          next();
+        }
+      }
+    );
 
     // Add List of Routers
     this.app.use('/', authRouter);
