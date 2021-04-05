@@ -36,6 +36,8 @@ authRouter.post(
     try {
       // Verify User's Input
       const loginCredential: LoginCredentials = req.body;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = req.body.username; // for logging
       if (!validateLoginCredentials(loginCredential)) {
         throw new BadRequestError();
       }
@@ -130,12 +132,14 @@ authRouter.delete(
     next: express.NextFunction
   ) => {
     try {
-      await Promise.all([
+      const result = await Promise.all([
         // Verify the refreshToken
         req.app.locals.refreshTokenVerify(req),
         // Delete from the database
         Session.delete(req.app.locals.dbClient, req.cookies['X-REFRESH-TOKEN']),
       ]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = (result[0] as RefreshTokenVerifyResult).content.username; // for logging
 
       // Clear Cookie & Response
       res.clearCookie('X-ACCESS-TOKEN', {httpOnly: true, maxAge: 0});
@@ -159,6 +163,8 @@ authRouter.delete(
       // verify the refresh token
       const {content} = await req.app.locals.refreshTokenVerify(req);
       const username = (content as AuthToken).username;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = username; // for logging
 
       // Logout From other Session (Remove DB)
       await Session.deleteNotCurrent(
@@ -189,6 +195,8 @@ authRouter.get(
       const verifyResult: RefreshTokenVerifyResult = await req.app.locals.refreshTokenVerify(
         req
       );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = verifyResult.content.username; // for logging
 
       // Check User Existence
       try {
@@ -273,6 +281,8 @@ authRouter.put(
       // verify the refresh token
       const {content} = await req.app.locals.refreshTokenVerify(req);
       const username = (content as AuthToken).username;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = username; // for logging
 
       // Verify User's Input
       const changePassword: ChangePassword = req.body;
