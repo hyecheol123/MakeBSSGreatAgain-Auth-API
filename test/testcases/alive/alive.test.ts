@@ -35,12 +35,29 @@ describe('Server Alive/Ready Check', () => {
     expect(response.status).toBe(200);
   });
 
+  test('Fail - Wrong Method (Alive)', async () => {
+    // Check server is alive
+    const response = await request(testEnv.expressServer.app).search('/alive');
+    expect(response.status).toBe(405);
+  });
+
   // Server Ready
   test('GET /alive/ready - Server Ready', async () => {
-    // Check server is ready
     const response = await request(testEnv.expressServer.app).get(
       '/alive/ready'
     );
     expect(response.status).toBe(200);
+  });
+
+  test('Fail - Wrong Method (Ready)', async () => {
+    const response = await request(testEnv.expressServer.app).trace(
+      '/alive/ready'
+    );
+    expect(response.status).toBe(405);
+  });
+
+  test('Fail - Wrong Method (Server Root)', async () => {
+    const response = await request(testEnv.expressServer.app).trace('/');
+    expect(response.status).toBe(405);
   });
 });

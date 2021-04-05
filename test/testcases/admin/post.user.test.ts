@@ -326,4 +326,15 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     expect(queryResult[0].password).not.toBe(hashedPassword);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .notify('/admin/user')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
+      .send(newUser);
+    expect(response.status).toBe(405);
+    done();
+  });
 });

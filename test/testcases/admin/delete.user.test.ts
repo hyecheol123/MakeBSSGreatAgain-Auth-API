@@ -116,4 +116,13 @@ describe('DELETE /admin/user/{username} - Admin Feature: DELETE User', () => {
     expect(response.status).toBe(404);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .move('/admin/user/user1')
+      .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`]);
+    expect(response.status).toBe(405);
+    done();
+  });
 });

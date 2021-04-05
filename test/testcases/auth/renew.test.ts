@@ -274,4 +274,27 @@ describe('POST /login - Login with username and password', () => {
     expect(response.status).toBe(401);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Login
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'admin', password: 'rootpw!!'});
+    expect(response.status).toBe(200);
+    refreshToken = response.header['set-cookie'][1]
+      .split('; ')[0]
+      .split('=')[1];
+
+    // Set MockDate
+    const currentTime = new Date();
+    currentTime.setMinutes(new Date().getMinutes() + 15); // expire accessToken
+    MockDate.set(currentTime);
+
+    // Renewal Request
+    response = await request(testEnv.expressServer.app)
+      .trace('/renew')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
+    expect(response.status).toBe(405);
+    done();
+  });
 });

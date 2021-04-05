@@ -155,4 +155,22 @@ describe('DELETE /logout - Logout from current session', () => {
     expect(queryResult.length).toBe(1);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // User Login (Retrieve Refresh Token)
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user2', password: 'password12!'});
+    expect(response.status).toBe(200);
+    const refreshToken = response.header['set-cookie'][1]
+      .split('; ')[0]
+      .split('=')[1];
+
+    // Logout Request
+    response = await request(testEnv.expressServer.app)
+      .trace('/logout')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
+    expect(response.status).toBe(405);
+    done();
+  });
 });

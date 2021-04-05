@@ -272,4 +272,14 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     expect(queryResult.length).toBe(3);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Password change request
+    const response = await request(testEnv.expressServer.app)
+      .trace('/password')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
+      .send({currentPassword: 'password12!', newPassword: 'newpw123'});
+    expect(response.status).toBe(405);
+    done();
+  });
 });

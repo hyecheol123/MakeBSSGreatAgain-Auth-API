@@ -235,4 +235,25 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     expect(response.status).toBe(404);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Password Change Request
+    const response = await request(testEnv.expressServer.app)
+      .trace('/login')
+      .send({username: 'user1', password: 'password'});
+    expect(response.status).toBe(405);
+
+    // DB Check - User (Not Changed)
+    const queryResult = await testEnv.dbClient.query(
+      "SELECT * FROM user WHERE username = 'user1'"
+    );
+    expect(queryResult.length).toBe(1);
+    const hashedPassword = testEnv.testConfig.hash(
+      'user1',
+      new Date(queryResult[0].membersince).toISOString(),
+      'password'
+    );
+    expect(queryResult[0].password).toBe(hashedPassword);
+    done();
+  });
 });

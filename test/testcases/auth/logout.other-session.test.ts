@@ -129,4 +129,22 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     expect(queryResult.length).toBe(2);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // User Login (Retrieve Refresh Token)
+    let response = await request(testEnv.expressServer.app)
+      .post('/login')
+      .send({username: 'user2', password: 'password12!'});
+    expect(response.status).toBe(200);
+    const refreshToken = response.header['set-cookie'][1]
+      .split('; ')[0]
+      .split('=')[1];
+
+    // Logout Request
+    response = await request(testEnv.expressServer.app)
+      .trace('/logout/other-sessions')
+      .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
+    expect(response.status).toBe(405);
+    done();
+  });
 });

@@ -177,4 +177,13 @@ describe('POST /login - Login with username and password', () => {
     expect(queryResult.length).toBe(0);
     done();
   });
+
+  test('Fail - Wrong Method', async done => {
+    // Request
+    const response = await request(testEnv.expressServer.app)
+      .trace('/login')
+      .send({username: 'admin', password: 'rootpw!!'});
+    expect(response.status).toBe(405);
+    done();
+  });
 });
