@@ -100,9 +100,14 @@ authRouter.post(
       const cookieOption: express.CookieOptions = {
         httpOnly: true,
         maxAge: 15 * 60,
+        secure: true,
+        domain: 'api.bshs.or.kr',
+        path: '/',
+        sameSite: 'strict',
       };
       res.cookie('X-ACCESS-TOKEN', accessToken, cookieOption);
       cookieOption.maxAge = 120 * 60;
+      cookieOption.path = '/auth';
       res.cookie('X-REFRESH-TOKEN', refreshToken, cookieOption);
       res.status(200).send();
     } catch (e) {
