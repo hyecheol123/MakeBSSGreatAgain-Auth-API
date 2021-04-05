@@ -36,7 +36,7 @@ describe('POST /login - Login with username and password', () => {
     // Request
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
 
     // Check Cookie & token Information
@@ -83,7 +83,7 @@ describe('POST /login - Login with username and password', () => {
     // Request
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
 
     // Check Cookie & token Information
@@ -161,7 +161,7 @@ describe('POST /login - Login with username and password', () => {
   test('Authentication Error - User Not Found', async done => {
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user', password: 'password12!'});
+      .send({username: 'notexistuser', password: 'password12!'});
     expect(response.status).toBe(401);
     const queryResult = await testEnv.dbClient.query('SELECT * FROM session');
     expect(queryResult.length).toBe(0);

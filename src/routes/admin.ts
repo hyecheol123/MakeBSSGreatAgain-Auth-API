@@ -106,7 +106,7 @@ adminRouter.delete(
   }
 );
 
-// PUT /user/{username}/password: Reset User's password
+// PUT /admin/user/{username}/password: Reset User's password
 adminRouter.put(
   '/user/:username/password',
   async (

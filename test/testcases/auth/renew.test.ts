@@ -33,7 +33,7 @@ describe('POST /login - Login with username and password', () => {
     // Login
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -54,7 +54,7 @@ describe('POST /login - Login with username and password', () => {
     // Login
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -130,7 +130,7 @@ describe('POST /login - Login with username and password', () => {
     // Login
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -279,7 +279,7 @@ describe('POST /login - Login with username and password', () => {
     // Login
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]

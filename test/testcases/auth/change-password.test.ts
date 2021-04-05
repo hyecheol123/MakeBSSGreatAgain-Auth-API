@@ -34,19 +34,19 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     MockDate.set(currentDate.getDate());
     await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
     await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
 
     // Retrieve refreshToken for the user
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -74,7 +74,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     // Retrieve refreshToken for the user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     refreshToken = response.header['set-cookie'][1]
       .split('; ')[0]
@@ -84,7 +84,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     response = await request(testEnv.expressServer.app)
       .put('/password')
       .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
-      .send({currentPassword: 'rootpw!!', newPassword: 'newpw123'});
+      .send({currentPassword: 'Rootpw12!!', newPassword: 'newPW129!!'});
     expect(response.status).toBe(200);
 
     // DB Check - User: Password Changed
@@ -95,7 +95,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'admin',
       new Date(queryResult[0].membersince).toISOString(),
-      'newpw123'
+      'newPW129!!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -117,7 +117,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     MockDate.set(currentDate.getTime());
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'newpw123'});
+      .send({username: 'admin', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -127,7 +127,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     let response = await request(testEnv.expressServer.app)
       .put('/password')
       .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
-      .send({currentPassword: 'password12!', newPassword: 'newpw123'});
+      .send({currentPassword: 'Password12!', newPassword: 'newPW129!!'});
     expect(response.status).toBe(200);
 
     // DB Check - User: Password Changed
@@ -138,7 +138,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user2',
       new Date(queryResult[0].membersince).toISOString(),
-      'newpw123'
+      'newPW129!!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -154,7 +154,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     MockDate.set(currentDate.getTime());
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'newpw123'});
+      .send({username: 'user2', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -175,7 +175,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user2',
       new Date(queryResult[0].membersince).toISOString(),
-      'password12!'
+      'Password12!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -232,7 +232,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user2',
       new Date(queryResult[0].membersince).toISOString(),
-      'password12!'
+      'Password12!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -250,7 +250,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const response = await request(testEnv.expressServer.app)
       .put('/password')
       .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`])
-      .send({currentPassword: 'wrongPW', newPassword: 'newpw123'});
+      .send({currentPassword: 'wrongPW', newPassword: 'newPW129!!'});
     expect(response.status).toBe(401);
 
     // DB Check - User: Password Not Changed
@@ -261,7 +261,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user2',
       new Date(queryResult[0].membersince).toISOString(),
-      'password12!'
+      'Password12!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 

@@ -116,7 +116,7 @@ export default class TestEnv {
     let userTimestamp = new Date('2021-03-10T00:50:43.000Z');
     sampleUsers.push([
       'user1',
-      this.testConfig.hash('user1', userTimestamp.toISOString(), 'password'),
+      this.testConfig.hash('user1', userTimestamp.toISOString(), 'Password13!'),
       userTimestamp,
       false,
     ]);
@@ -124,7 +124,7 @@ export default class TestEnv {
     userTimestamp = new Date('2021-03-07T01:15:42.000Z');
     sampleUsers.push([
       'user2',
-      this.testConfig.hash('user2', userTimestamp.toISOString(), 'password12!'),
+      this.testConfig.hash('user2', userTimestamp.toISOString(), 'Password12!'),
       userTimestamp,
       false,
     ]);
@@ -132,7 +132,7 @@ export default class TestEnv {
     userTimestamp = new Date('2021-02-07T01:15:36.000Z');
     sampleUsers.push([
       'admin',
-      this.testConfig.hash('admin', userTimestamp.toISOString(), 'rootpw!!'),
+      this.testConfig.hash('admin', userTimestamp.toISOString(), 'Rootpw12!!'),
       userTimestamp,
       true,
     ]);

@@ -37,7 +37,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     memberSince.setMilliseconds(0);
     newUser = {
       username: 'admin2',
-      password: 'newpw',
+      password: 'newPW129!!',
       membersince: memberSince.toISOString(),
       admin: true,
     };
@@ -45,7 +45,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Login with admin user
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
     refreshToken = response.header['set-cookie'][1]
@@ -84,7 +84,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Able to login with new Account
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin2', password: 'newpw'});
+      .send({username: 'admin2', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -93,7 +93,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Request
     newUser = {
       username: 'user3',
-      password: 'newpw',
+      password: 'newPW129!!',
       membersince: memberSince.toISOString(),
     };
     let response = await request(testEnv.expressServer.app)
@@ -121,7 +121,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Able to login with new Account
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user3', password: 'newpw'});
+      .send({username: 'user3', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -202,7 +202,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
     // Login with non-admin user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user2', password: 'password12!'});
+      .send({username: 'user2', password: 'Password12!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
     refreshToken = response.header['set-cookie'][1]
@@ -230,7 +230,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
         username: 'admin2',
-        password: 'newpw',
+        password: 'newPW123!!',
         admin: true,
       });
     expect(response.status).toBe(400);
@@ -249,7 +249,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .post('/admin/user')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
-        password: 'newpw',
+        password: 'newPW123!!',
         membersince: memberSince.toISOString(),
         admin: true,
       });
@@ -284,7 +284,7 @@ describe('POST /admin/user - Admin Feature: Add New User', () => {
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
       .send({
         username: 'admin2',
-        password: 'newpw',
+        password: 'newPW123!!',
         membersince: memberSince.toISOString(),
         admin: true,
         additional: 'dummy',

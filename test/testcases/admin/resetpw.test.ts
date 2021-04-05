@@ -32,7 +32,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Login with admin user
     const response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
 
@@ -50,20 +50,20 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Login with the target user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
 
     // Password Change Request
     response = await request(testEnv.expressServer.app)
       .put('/admin/user/user1/password')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
-      .send({newPassword: 'newPW123!!'});
+      .send({newPassword: 'newPW129!!'});
     expect(response.status).toBe(200);
 
     // DB Check - User
@@ -74,7 +74,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user1',
       new Date(queryResult[0].membersince).toISOString(),
-      'newPW123!!'
+      'newPW129!!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -87,7 +87,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Able to Login with new PW
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'newPW123!!'});
+      .send({username: 'user1', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -96,20 +96,20 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Login with the target user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
     currentDate.setSeconds(currentDate.getSeconds() + 1);
     MockDate.set(currentDate.getTime());
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
 
     // Password Change Request
     response = await request(testEnv.expressServer.app)
       .put('/admin/user/admin/password')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
-      .send({newPassword: 'newPW123!!'});
+      .send({newPassword: 'newPW129!!'});
     expect(response.status).toBe(200);
 
     // DB Check - User
@@ -120,7 +120,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'admin',
       new Date(queryResult[0].membersince).toISOString(),
-      'newPW123!!'
+      'newPW129!!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -133,7 +133,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Able to Login with new PW
     response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'newPW123!!'});
+      .send({username: 'admin', password: 'newPW129!!'});
     expect(response.status).toBe(200);
     done();
   });
@@ -142,7 +142,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Login with the target user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'user1', password: 'password'});
+      .send({username: 'user1', password: 'Password13!'});
     expect(response.status).toBe(200);
     accessToken = response.header['set-cookie'][0].split('; ')[0].split('=')[1];
 
@@ -161,7 +161,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user1',
       new Date(queryResult[0].membersince).toISOString(),
-      'password'
+      'Password13!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -183,7 +183,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     // Login with the target user
     let response = await request(testEnv.expressServer.app)
       .post('/login')
-      .send({username: 'admin', password: 'rootpw!!'});
+      .send({username: 'admin', password: 'Rootpw12!!'});
     expect(response.status).toBe(200);
 
     // Password Change Request - Wrong Key
@@ -214,7 +214,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user1',
       new Date(queryResult[0].membersince).toISOString(),
-      'password'
+      'Password13!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
 
@@ -231,7 +231,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const response = await request(testEnv.expressServer.app)
       .put('/admin/user/user3/password')
       .set('Cookie', [`X-ACCESS-TOKEN=${accessToken}`])
-      .send({newPassword: 'newPW123!!'});
+      .send({newPassword: 'newPW129!!'});
     expect(response.status).toBe(404);
     done();
   });
@@ -251,7 +251,7 @@ describe('PUT /admin/user/{username}/password - Reset Password', () => {
     const hashedPassword = testEnv.testConfig.hash(
       'user1',
       new Date(queryResult[0].membersince).toISOString(),
-      'password'
+      'Password13!'
     );
     expect(queryResult[0].password).toBe(hashedPassword);
     done();
