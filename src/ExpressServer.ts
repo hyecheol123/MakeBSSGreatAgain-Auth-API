@@ -160,10 +160,11 @@ export default class ExpressServer {
       pino.destination({sync: false, minLength: 4096})
     );
     this.app.use(pinoHttp({logger: logger}));
-    // Flush Log every 10 seconds when idle
+    // Flush Log every 15 seconds when idle
+    /* istanbul ignore next */
     setInterval(() => {
       logger.flush();
-    }, 10000).unref();
+    }, 15000).unref();
     this.logger = logger;
 
     // Only Allow GET, POST, DELETE, PUT method
@@ -213,8 +214,6 @@ export default class ExpressServer {
    * - Flush Log
    */
   async closeServer(): Promise<void> {
-    const closeDB = this.app.locals.dbClient.end();
-    this.logger.flush();
-    await closeDB;
+    await Promise.all([this.app.locals.dbClient.end(), this.logger.flush()]);
   }
 }
