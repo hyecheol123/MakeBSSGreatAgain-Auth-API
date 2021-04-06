@@ -52,7 +52,7 @@ describe('POST /login - Login with username and password', () => {
     expect(tokenPayload.username).toBe('user2');
     expect(tokenPayload.type).toBe('access');
     expect(tokenPayload.admin).toBeUndefined();
-    // Parse Refersh Token
+    // Parse Refresh Token
     cookie = response.header['set-cookie'][1].split('; ')[0].split('=');
     expect(cookie[0]).toBe('X-REFRESH-TOKEN'); // check for Refresh Token Name
     tokenPayload = jwt.verify(

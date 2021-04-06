@@ -8,6 +8,8 @@ import * as express from 'express';
 import * as mariadb from 'mariadb';
 import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
+import * as pinoHttp from 'pino-http';
+import * as pino from 'pino';
 import ServerConfig from './ServerConfig';
 import AuthenticationError from './exceptions/AuthenticationError';
 import HTTPError from './exceptions/HTTPError';
@@ -24,6 +26,7 @@ import JWTObject from './datatypes/JWTObject';
  */
 export default class ExpressServer {
   app: express.Application;
+  logger: pino.Logger;
 
   /**
    * Constructor for ExpressAppHelper
@@ -124,6 +127,46 @@ export default class ExpressServer {
     this.app.use(express.json());
     this.app.use(cookieParser());
 
+    // Setup Logger
+    const pinoOptions: pino.LoggerOptions = {
+      name: 'MakeBSSGreatAgain-Auth-API',
+      formatters: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        log(object: any) {
+          object.username = object.res.req.username;
+          return object;
+        },
+        bindings(bindings) {
+          return {hostname: bindings.hostname};
+        },
+      },
+      redact: {
+        paths: [
+          'req.id',
+          'req.headers.connection',
+          'req.headers.cookie',
+          'res.headers["set-cookie"]',
+          'res.headers.etag',
+          'res.headers["x-powered-by"]',
+          'res.headers.charset',
+          'msg',
+        ],
+        remove: true,
+      },
+    };
+    // Logging to stdout
+    const logger = pino(
+      pinoOptions,
+      pino.destination({sync: false, minLength: 4096})
+    );
+    this.app.use(pinoHttp({logger: logger}));
+    // Flush Log every 15 seconds when idle
+    /* istanbul ignore next */
+    setInterval(() => {
+      logger.flush();
+    }, 15000).unref();
+    this.logger = logger;
+
     // Only Allow GET, POST, DELETE, PUT method
     this.app.use(
       (
@@ -166,9 +209,11 @@ export default class ExpressServer {
   }
 
   /**
-   * Close connection with Database server gracefully
+   * CLose Server
+   * - Close connection with Database server gracefully
+   * - Flush Log
    */
-  async closeDB(): Promise<void> {
-    await this.app.locals.dbClient.end();
+  async closeServer(): Promise<void> {
+    await Promise.all([this.app.locals.dbClient.end(), this.logger.flush()]);
   }
 }

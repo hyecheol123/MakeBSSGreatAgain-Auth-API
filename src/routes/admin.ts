@@ -28,6 +28,8 @@ adminRouter.post(
     try {
       // Verify admin's access token
       const content: AuthToken = req.app.locals.accessTokenVerify(req);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = content.username; // for logging
       if (content.admin !== true) {
         throw new AuthenticationError();
       }
@@ -82,6 +84,8 @@ adminRouter.delete(
     try {
       // Verify admin's access token
       const content: AuthToken = req.app.locals.accessTokenVerify(req);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = content.username; // for logging
       if (content.admin !== true) {
         throw new AuthenticationError();
       }
@@ -118,6 +122,8 @@ adminRouter.put(
     try {
       // Verify Admin's Access Token
       const content: AuthToken = req.app.locals.accessTokenVerify(req);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).username = content.username; // for logging
       if (content.admin !== true) {
         throw new AuthenticationError();
       }

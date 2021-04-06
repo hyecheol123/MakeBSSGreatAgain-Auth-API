@@ -19,7 +19,7 @@ console.log(`Start Auth API Server at port ${configInstance.expressPort}`);
 // Gracefully shutdown express server
 const shutdown = async (): Promise<void> => {
   // Close database connection
-  await expressServer.closeDB();
+  await expressServer.closeServer();
 
   // Close API Server
   server.close(() => {
