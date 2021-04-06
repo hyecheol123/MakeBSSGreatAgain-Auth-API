@@ -169,7 +169,7 @@ export default class TestEnv {
     await this.dbClient.query(`DROP DATABASE db_${this.dbIdentifier}`);
 
     // Close database connection of the express server
-    await this.expressServer.closeDB();
+    await this.expressServer.closeServer();
 
     // Close database connection used during tests
     await this.dbClient.end();
