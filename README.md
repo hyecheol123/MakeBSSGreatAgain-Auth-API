@@ -23,7 +23,7 @@ These are used to lint, test, build, and run the code.
 
 ## Dependencies/Environment
 
-Developed and tested with `Ubuntu 20.04.2 LTS`, with `Node v14.16.0`.
+Developed and tested with `Ubuntu 20.04.2 LTS`, with `Node v14.17.0`.
 
 To configure the typescript development environment easily, [gts](https://github.com/google/gts) has been used.
 Based on the `gts` style rules, I modified some to enforce rules more strictly.
