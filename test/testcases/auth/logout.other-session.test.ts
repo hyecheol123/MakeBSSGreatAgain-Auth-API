@@ -101,14 +101,8 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
   });
 
   test('Fail - Token NOT in DB', async done => {
-    // User Login (Retrieve Token)
+    // User Logout (Remove token from DB) / Token from previous login
     let response = await request(testEnv.expressServer.app)
-      .post('/login')
-      .send({username: 'user2', password: 'Password12!'});
-    expect(response.status).toBe(200);
-
-    // User Logout (Remove token from DB)
-    response = await request(testEnv.expressServer.app)
       .delete('/logout')
       .set('Cookie', [`X-REFRESH-TOKEN=${refreshToken}`]);
     expect(response.status).toBe(200);
@@ -125,7 +119,7 @@ describe('DELETE /logout/other-sessions - Logout from other sessions', () => {
       'SELECT * FROM session WHERE username = ?',
       ['user2']
     );
-    expect(queryResult.length).toBe(2);
+    expect(queryResult.length).toBe(1);
     done();
   });
 
