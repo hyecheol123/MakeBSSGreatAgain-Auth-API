@@ -6,7 +6,7 @@
 
 import {Server} from 'http';
 import ExpressServer from './ExpressServer';
-import ServerConfig from './ServerConfigExample';
+import ServerConfig from './ServerConfig';
 
 const configInstance = new ServerConfig(); // Configuration of the server
 const expressServer = new ExpressServer(configInstance); // express server setup
