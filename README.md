@@ -45,7 +45,7 @@ Data Diagram for the database
     password CHAR(88) NOT NULL,
     membersince TIMESTAMP NOT NULL,
     admin BOOLEAN NOT NULL
-  );
+  ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
   ```
   
   SQL Query to create `session` table is
@@ -55,7 +55,7 @@ Data Diagram for the database
     expires TIMESTAMP NULL DEFAULT NULL,
     username VARCHAR(12) NOT NULL,
     FOREIGN KEY (username) REFERENCES user(username) ON DELETE CASCADE ON UPDATE NO ACTION
-  );
+  ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
   ```
 </details>
 

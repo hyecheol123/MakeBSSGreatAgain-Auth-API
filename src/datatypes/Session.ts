@@ -11,12 +11,12 @@ import * as mariadb from 'mariadb';
  */
 export default class Session {
   readonly token: string; // RefreshToken
-  expiresAt: Date; // In DB, format: datetime string
+  expires: Date; // In DB, format: datetime string
   readonly username: string;
 
-  constructor(token: string, expiresAt: Date, username: string) {
+  constructor(token: string, expires: Date, username: string) {
     this.token = token;
-    this.expiresAt = expiresAt;
+    this.expires = expires;
     this.username = username;
   }
 
@@ -28,8 +28,8 @@ export default class Session {
    */
   static async create(dbClient: mariadb.Pool, session: Session): Promise<void> {
     await dbClient.query(
-      'INSERT INTO session (token, expiresAt, username) values (?, ?, ?)',
-      [session.token, session.expiresAt, session.username]
+      'INSERT INTO session (token, expires, username) values (?, ?, ?)',
+      [session.token, session.expires, session.username]
     );
   }
 
@@ -87,7 +87,7 @@ export default class Session {
     currentDate: Date
   ): Promise<void> {
     await dbClient.query(
-      'DELETE FROM session where username = ? AND expiresAt < ?',
+      'DELETE FROM session where username = ? AND expires < ?',
       [username, currentDate]
     );
   }
@@ -105,7 +105,7 @@ export default class Session {
       token
     );
     for (const entry of queryResult) {
-      (entry as Session).expiresAt = new Date(entry.expiresAt);
+      (entry as Session).expires = new Date(entry.expires);
     }
     return queryResult;
   }

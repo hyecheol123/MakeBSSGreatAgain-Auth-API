@@ -104,10 +104,11 @@ export default class TestEnv {
     // Create Table
     await this.dbClient.query(
       'CREATE TABLE user (' +
-        'username VARCHAR(12) NOT NULL PRIMARY KEY, ' +
-        'password CHAR(88) NOT NULL, ' +
-        'membersince TIMESTAMP NULL DEFAULT NULL, ' +
-        'admin BOOLEAN NOT NULL) ENGINE = MEMORY;'
+        'username VARCHAR(12) NOT NULL PRIMARY KEY,' +
+        'password CHAR(88) NOT NULL,' +
+        'membersince TIMESTAMP NULL DEFAULT NULL,' +
+        'admin BOOLEAN NOT NULL' +
+        ') CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ENGINE = MEMORY;'
     );
 
     // Sample Data
@@ -151,10 +152,11 @@ export default class TestEnv {
     // Create Table
     await this.dbClient.query(
       'CREATE TABLE session (' +
-        'token VARCHAR(400) NOT NULL PRIMARY KEY, ' +
-        'expiresAt TIMESTAMP NULL DEFAULT NULL, ' +
-        'username VARCHAR(12) NOT NULL, ' +
-        'INDEX usernameIdx(username)) ENGINE = MEMORY;'
+        'token VARCHAR(255) NOT NULL PRIMARY KEY,' +
+        'expires TIMESTAMP NULL DEFAULT NULL,' +
+        'username VARCHAR(12) NOT NULL,' +
+        'FOREIGN KEY (username) REFERENCES user(username) ON DELETE CASCADE ON UPDATE NO ACTION' +
+        ') CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ENGINE = MEMORY;'
     );
 
     // Sessions will be created by calling Login API
