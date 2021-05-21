@@ -106,7 +106,7 @@ export default class ExpressServer {
         this.app.locals.dbClient,
         req.cookies['X-REFRESH-TOKEN']
       );
-      if (dbResult.length !== 1 || dbResult[0].expiresAt < new Date()) {
+      if (dbResult.length !== 1 || dbResult[0].expires < new Date()) {
         throw new AuthenticationError();
       }
 
@@ -115,7 +115,7 @@ export default class ExpressServer {
       expectedExpire.setMinutes(new Date().getMinutes() + 20);
       delete (tokenContents as JWTObject).iat;
       delete (tokenContents as JWTObject).exp;
-      if (dbResult[0].expiresAt < expectedExpire) {
+      if (dbResult[0].expires < expectedExpire) {
         // Less than 20min left
         return {content: tokenContents, needRenew: true};
       } else {
