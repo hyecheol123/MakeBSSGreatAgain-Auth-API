@@ -30,25 +30,34 @@ Based on the `gts` style rules, I modified some to enforce rules more strictly.
 To see the modification, please check [`.eslintrc.json` file](https://github.com/hyecheol123/generic-auth-api/blob/main/.eslintrc.json).
 
 For the database, this project is relying on [MariaDB](https://mariadb.org/), which almost identical with the MySQL.
-In this project, all informations are stored in `auth_api` database.  
+In this project, all information are stored in `auth_api` database.  
 
-SQL Query to create `user` table is 
-``` SQL
-CREATE TABLE user (
-  username VARCHAR(12) NOT NULL PRIMARY KEY,
-  password CHAR(88) NOT NULL,
-  membersince TIMESTAMP NULL DEFAULT NULL,
-  admin BOOLEAN NOT NULL);
-```
+Data Diagram for the database  
+![AuthERD.svg](img/AuthERD.svg)
 
-SQL Query to create `session` table is
-``` SQL
-CREATE TABLE session (
-  token VARCHAR(400) NOT NULL PRIMARY KEY,
-  expiresAt TIMESTAMP NULL DEFAULT NULL,
-  username VARCHAR(12) NOT NULL,
-  INDEX usernameIdx(username));
-```
+<details>
+  <summary>Click to see SQL Queries to create tables.</summary>
+
+  SQL Query to create `user` table is 
+  ``` SQL
+  CREATE TABLE user (
+    username VARCHAR(12) NOT NULL PRIMARY KEY,
+    password CHAR(88) NOT NULL,
+    membersince TIMESTAMP NOT NULL,
+    admin BOOLEAN NOT NULL
+  );
+  ```
+  
+  SQL Query to create `session` table is
+  ```SQL
+  CREATE TABLE session (
+    token VARCHAR(255) NOT NULL PRIMARY KEY,
+    expires TIMESTAMP NULL DEFAULT NULL,
+    username VARCHAR(12) NOT NULL,
+    FOREIGN KEY (username) REFERENCES user(username) ON DELETE CASCADE ON UPDATE NO ACTION
+  );
+  ```
+</details>
 
 [Express](https://expressjs.com/) is a web framework for node.js.
 This project used it to develop and maintain APIs more conveniently.
