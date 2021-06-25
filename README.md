@@ -2,6 +2,8 @@
 
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
+### This Project has been DEPRECIATED and WILL NOT UPDATED
+
 Authentication API for Make BSS Great Again Project
 Using [Generic Auth API](https://github.com/hyecheol123/generic-auth-api) as template.
 
